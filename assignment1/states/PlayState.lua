@@ -17,13 +17,25 @@ PIPE_HEIGHT = 288
 BIRD_WIDTH = 38
 BIRD_HEIGHT = 24
 
+
+
 function PlayState:init()
-    self.bird = Bird()
-    self.pipePairs = {}
-    self.timer = 0
-    self.score = 0
-    -- initialize our last recorded Y value for a gap placement to base other gaps off of
-    self.lastY = -PIPE_HEIGHT + math.random(80) + 20
+    -- update self to play/pause state if paused
+    if gPlayPauseState.pipePairs ~= nil then
+        self.bird = gPlayPauseState.bird
+        self.pipePairs = gPlayPauseState.pipePairs
+        self.timer = gPlayPauseState.timer
+        self.score = gPlayPauseState.score
+        self.lastY = gPlayPauseState.lastY
+        gPlayPauseState = {}
+    else
+        self.bird = Bird()
+        self.pipePairs = {}
+        self.timer = 0
+        self.score = 0
+        -- initialize our last recorded Y value for a gap placement to base other gaps off of
+        self.lastY = -PIPE_HEIGHT + math.random(80) + 20
+    end
 end
 
 function PlayState:update(dt)
@@ -33,7 +45,6 @@ function PlayState:update(dt)
     if rando == 0 then
         rando = math.random(1.5, 3)
     end
-
 
     -- spawn a new pipe pair every second and a half
     if self.timer > rando then
@@ -103,6 +114,12 @@ function PlayState:update(dt)
         gStateMachine:change('score', {
             score = self.score
         })
+    end
+
+    -- pause game
+    if love.keyboard.wasPressed('p') then
+        gPlayPauseState = self
+        gStateMachine:change('pause')
     end
 end
 

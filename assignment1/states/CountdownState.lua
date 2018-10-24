@@ -40,6 +40,17 @@ function CountdownState:update(dt)
 end
 
 function CountdownState:render()
+    -- if returning from pause state, render
+    if gPlayPauseState.bird ~= nil then
+        for k, pair in pairs(gPlayPauseState.pipePairs) do
+            pair:render()
+        end
+
+        love.graphics.setFont(flappyFont)
+        love.graphics.print('Score: ' .. tostring(gPlayPauseState.score), 8, 8)
+
+        gPlayPauseState.bird:render()
+    end
     -- render count big in the middle of the screen
     love.graphics.setFont(hugeFont)
     love.graphics.printf(tostring(self.count), 0, 120, VIRTUAL_WIDTH, 'center')
